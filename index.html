@@ -15,9 +15,7 @@
       align-items: center;
     }
 
-    h1 {
-      margin-bottom: 20px;
-    }
+    h1 { margin-bottom: 20px; }
 
     .container {
       display: flex;
@@ -71,8 +69,15 @@
       border-radius: 10px;
       box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       cursor: grab;
-      width: 120px;
+      width: 140px;
       text-align: center;
+    }
+
+    .position-label {
+      font-size: 13px;
+      font-weight: bold;
+      color: #555;
+      margin-bottom: 4px;
     }
 
     .tags {
@@ -126,30 +131,34 @@
 
   <script>
     const players = [
-      { name: "Hinata SP", types: ["Quick","Receive"], libero: false },
-      { name: "Nishinoya SP", types: ["Receive","Set"], libero: true },
-      { name: "Tsuki SP", types: ["Quick","Block"], libero: false },
-      { name: "Sugawara SP", types: ["Block","Serve","Set"], libero: false },
-      { name: "Kenma", types: ["Receive","Set"], libero: false },
-      { name: "Aone SP", types: ["Block","Serve"], libero: false },
-      { name: "Bokuto SP", types: ["Power","Receive"], libero: false },
-      { name: "Akaashi SP", types: ["Power","Set"], libero: false },
-      { name: "Kuro SP", types: ["Receive","Quick"], libero: false },
-      { name: "Kunimi SP", types: ["Receive","Power"], libero: false },
-      { name: "Koganegawa SP", types: ["Quick","Set"], libero: false },
-      { name: "Oikawa SP", types: ["Power","Set"], libero: false },
-      { name: "Kageyama UR", types: ["Quick","Serve","Set"], libero: false },
-      { name: "Kuro UR", types: ["Quick","Block"], libero: false },
-      { name: "Oikawa UR", types: ["Power","Serve","Set"], libero: false },
-      { name: "Ushijima UR", types: ["Power","Serve"], libero: false },
-      { name: "Bokuto UR", types: ["Power","Serve"], libero: false },
-      { name: "Atsumu UR", types: ["Quick","Serve","Set"], libero: false },
-      { name: "Osamu UR", types: ["Quick","Serve"], libero: false },
-      { name: "Hoshiumi UR", types: ["Power","Serve","Set","Quick"], libero: false },
-      { name: "Hirugami UR", types: ["Set","Block"], libero: false },
-      { name: "Sakusa UR", types: ["Receive","Power"], libero: false },
-      { name: "Komori UR", types: ["Receive","Set"], libero: true }
+      { name: "Hinata SP", types: ["Quick","Receive"], position: "MB", libero: false },
+      { name: "Nishinoya SP", types: ["Receive","Set"], position: "Libero", libero: true },
+      { name: "Tsuki SP", types: ["Quick","Block"], position: "MB", libero: false },
+      { name: "Sugawara SP", types: ["Block","Serve","Set"], position: "S", libero: false },
+      { name: "Kenma", types: ["Receive","Set"], position: "S", libero: false },
+      { name: "Aone SP", types: ["Block","Serve"], position: "MB", libero: false },
+      { name: "Bokuto SP", types: ["Power","Receive"], position: "WS", libero: false },
+      { name: "Akaashi SP", types: ["Power","Set"], position: "S", libero: false },
+      { name: "Kuro SP", types: ["Receive","Quick"], position: "MB", libero: false },
+      { name: "Kunimi SP", types: ["Receive","Power"], position: "OP", libero: false },
+      { name: "Koganegawa SP", types: ["Quick","Set"], position: "S", libero: false },
+      { name: "Oikawa SP", types: ["Power","Set"], position: "S", libero: false },
+      { name: "Kageyama UR", types: ["Quick","Serve","Set"], position: "S", libero: false },
+      { name: "Kuro UR", types: ["Quick","Block"], position: "MB", libero: false },
+      { name: "Oikawa UR", types: ["Power","Serve","Set"], position: "S", libero: false },
+      { name: "Ushijima UR", types: ["Power","Serve"], position: "OP", libero: false },
+      { name: "Bokuto UR", types: ["Power","Serve"], position: "WS", libero: false },
+      { name: "Atsumu UR", types: ["Quick","Serve","Set"], position: "S", libero: false },
+      { name: "Osamu UR", types: ["Quick","Serve"], position: "OP", libero: false },
+      { name: "Hoshiumi UR", types: ["Power","Receive","Block","Serve"], position: "WS", libero: false },
+      { name: "Hirugami UR", types: ["Set","Block"], position: "MB", libero: false },
+      { name: "Sakusa UR", types: ["Receive","Power"], position: "WS", libero: false },
+      { name: "Komori UR", types: ["Receive","Set"], position: "Libero", libero: true }
     ];
+
+    // sort players by position order
+    const positionOrder = ["S", "MB", "WS", "OP", "Libero"];
+    players.sort((a,b) => positionOrder.indexOf(a.position) - positionOrder.indexOf(b.position));
 
     const bench = document.getElementById("bench");
     const court = document.getElementById("court");
@@ -176,15 +185,18 @@
       const div = document.createElement("div");
       div.className = "player";
       div.draggable = true;
-      div.textContent = p.name;
+
+      div.innerHTML = `<div class="position-label">${p.position}</div>${p.name}`;
 
       const tagBox = document.createElement("div");
       tagBox.className = "tags";
       p.types.forEach(t => {
-        const span = document.createElement("span");
-        span.className = "tag " + t;
-        span.textContent = t;
-        tagBox.appendChild(span);
+        if (["Quick","Power","Block","Receive"].includes(t)) {
+          const span = document.createElement("span");
+          span.className = "tag " + t;
+          span.textContent = t;
+          tagBox.appendChild(span);
+        }
       });
       div.appendChild(tagBox);
 
