@@ -2,244 +2,207 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Haikyuu Team Builder</title>
   <style>
     body {
       font-family: Arial, sans-serif;
-      background: #f3f3f3;
+      background: #f4f4f4;
       margin: 0;
-      padding: 0;
+      padding: 20px;
       display: flex;
       flex-direction: column;
       align-items: center;
     }
+
     h1 {
-      margin: 20px;
-    }
-    .court {
-      display: grid;
-      grid-template-columns: repeat(3, 150px);
-      grid-template-rows: repeat(3, 200px);
-      gap: 10px;
-      background: #fff;
-      padding: 20px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       margin-bottom: 20px;
     }
-    .slot {
+
+    .container {
+      display: flex;
+      gap: 30px;
+      align-items: flex-start;
+    }
+
+    .court {
+      display: grid;
+      grid-template-columns: repeat(4, 120px);
+      grid-template-rows: repeat(2, 150px);
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+
+    .court div {
       border: 2px dashed #aaa;
       border-radius: 8px;
       display: flex;
-      justify-content: center;
       align-items: center;
-      font-size: 14px;
-      color: #666;
-      background: #fafafa;
+      justify-content: center;
+      background: white;
+      font-weight: bold;
+      cursor: pointer;
     }
-    .slot.filled {
-      border-style: solid;
-      background: #e9f7ff;
+
+    .totals {
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+      min-width: 150px;
     }
+
     .bench {
       display: flex;
       flex-wrap: wrap;
+      gap: 12px;
+      margin-top: 20px;
       justify-content: center;
-      gap: 10px;
-      margin: 20px;
-      max-width: 1000px;
     }
+
     .player {
-      width: 140px;
-      background: #fff;
-      border-radius: 8px;
-      text-align: center;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      background: white;
+      padding: 8px;
+      border-radius: 10px;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.1);
       cursor: grab;
-      overflow: hidden;
+      width: 120px;
+      text-align: center;
     }
-    .player img {
-      width: 100%;
-      height: 100px;
-      object-fit: cover;
-      border-bottom: 1px solid #ddd;
-    }
-    .player strong {
-      display: block;
-      padding: 6px 0;
-    }
-    .player.dragging {
-      opacity: 0.5;
-    }
-    .types {
-      margin: 6px;
+
+    .tags {
       display: flex;
       flex-wrap: wrap;
-      justify-content: center;
       gap: 4px;
+      margin-top: 6px;
+      justify-content: center;
     }
-    .type-tag {
+
+    .tag {
       padding: 2px 6px;
       border-radius: 6px;
-      font-size: 11px;
-      font-weight: bold;
+      font-size: 12px;
       color: white;
     }
-    .Quick { background: #27ae60; }
-    .Power { background: #e74c3c; }
-    .Block { background: #2980b9; }
-    .Serve { background: #f39c12; }
-    .Receive { background: #8e44ad; }
-    .Set { background: #2c3e50; }
-    .counter-panel {
-      background: #fff;
-      padding: 15px;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      margin: 20px;
-      width: 280px;
-    }
-    .counter-panel h3 {
-      margin-top: 0;
-    }
-    .counter-panel ul {
-      list-style: none;
-      padding: 0;
-    }
-    .counter-panel li {
-      margin: 6px 0;
-      font-weight: bold;
-    }
-    .counter-panel span {
-      padding: 2px 6px;
-      border-radius: 6px;
-      color: #fff;
-    }
+
+    .Quick { background: #4CAF50; }
+    .Power { background: #f44336; }
+    .Block { background: #2196F3; }
+    .Serve { background: #ff9800; }
+    .Receive { background: #9c27b0; }
+    .Set { background: #607d8b; }
   </style>
 </head>
 <body>
   <h1>Haikyuu Team Builder</h1>
 
-  <!-- Court Layout -->
-  <div class="court">
-    <div class="slot" data-role="S">Setter</div>
-    <div class="slot" data-role="MB">Middle Blocker</div>
-    <div class="slot" data-role="WS">Wing Spiker</div>
-    <div class="slot" data-role="L">Libero</div>
-    <div class="slot" data-role="WS">Wing Spiker</div>
-    <div class="slot" data-role="MB">Middle Blocker</div>
-    <div class="slot" data-role="OP">Opposite</div>
+  <div class="container">
+    <!-- Court -->
+    <div class="court" id="court">
+      <div data-pos="1">Position 1</div>
+      <div data-pos="2">Position 2</div>
+      <div data-pos="3">Position 3</div>
+      <div data-pos="4">Position 4</div>
+      <div data-pos="5">Position 5</div>
+      <div data-pos="6">Position 6</div>
+      <div data-pos="7">Position 7</div>
+    </div>
+
+    <!-- Totals -->
+    <div class="totals">
+      <h3>Type Totals</h3>
+      <p class="Quick">Quick: <span id="Quick">0</span></p>
+      <p class="Power">Power: <span id="Power">0</span></p>
+      <p class="Block">Block: <span id="Block">0</span></p>
+      <p class="Serve">Serve: <span id="Serve">0</span></p>
+      <p class="Receive">Receive: <span id="Receive">0</span></p>
+      <p class="Set">Set: <span id="Set">0</span></p>
+    </div>
   </div>
 
-  <!-- Counter Panel -->
-  <div class="counter-panel">
-    <h3>Type Totals</h3>
-    <ul id="type-counts">
-      <li><span class="Quick">Quick</span>: 0</li>
-      <li><span class="Power">Power</span>: 0</li>
-      <li><span class="Block">Block</span>: 0</li>
-      <li><span class="Serve">Serve</span>: 0</li>
-      <li><span class="Receive">Receive</span>: 0</li>
-      <li><span class="Set">Set</span>: 0</li>
-    </ul>
-  </div>
-
-  <!-- Bench -->
   <h2>Bench</h2>
   <div class="bench" id="bench"></div>
 
   <script>
     const players = [
-      {name: "Hinata SP", types: ["Quick", "Receive"], image: "https://via.placeholder.com/150/ff7f7f/ffffff?text=Hinata"},
-      {name: "Nishinoya SP", types: ["Receive"], image: "https://via.placeholder.com/150/7f7fff/ffffff?text=Nishinoya"},
-      {name: "Tsukki SP", types: ["Block"], image: "https://via.placeholder.com/150/ffbf7f/ffffff?text=Tsukki"},
-      {name: "Sugawara SP", types: ["Serve", "Set"], image: "https://via.placeholder.com/150/7fff7f/ffffff?text=Sugawara"},
-      {name: "Aone SP", types: ["Block", "Serve"], image: "https://via.placeholder.com/150/ffff7f/000000?text=Aone"},
-      {name: "Bokuto SP", types: ["Power", "Serve"], image: "https://via.placeholder.com/150/7fffff/000000?text=Bokuto"},
-      {name: "Akaashi SP", types: ["Power", "Set"], image: "https://via.placeholder.com/150/ff7fff/000000?text=Akaashi"},
-      {name: "Kuro SP", types: ["Power", "Block"], image: "https://via.placeholder.com/150/ff9999/000000?text=Kuro"},
-      {name: "Oikawa SP", types: ["Power", "Set"], image: "https://via.placeholder.com/150/9999ff/000000?text=Oikawa"},
-      {name: "Kageyama UR", types: ["Quick", "Serve", "Set"], image: "https://via.placeholder.com/150/99ff99/000000?text=Kageyama"},
-      {name: "Ushijima UR", types: ["Power", "Serve"], image: "https://via.placeholder.com/150/ffcc99/000000?text=Ushijima"},
-      {name: "Sakusa UR", types: ["Receive", "Power"], image: "https://via.placeholder.com/150/cccccc/000000?text=Sakusa"},
-      {name: "Komori UR", types: ["Receive", "Set"], image: "https://via.placeholder.com/150/cc99ff/000000?text=Komori"}
+      { name: "Hinata SP", types: ["Quick", "Receive"] },
+      { name: "Nishinoya SP", types: ["Receive", "Set"] },
+      { name: "Tsuki SP", types: ["Quick", "Block"] },
+      { name: "Sugawara SP", types: ["Block", "Serve", "Set"] },
+      { name: "Kenma", types: ["Receive", "Set"] },
+      { name: "Aone SP", types: ["Block", "Serve"] },
+      { name: "Bokuto SP", types: ["Power", "Receive"] },
+      { name: "Akaashi SP", types: ["Power", "Set"] },
+      { name: "Kuro SP", types: ["Receive", "Quick"] },
+      { name: "Kunimi SP", types: ["Receive", "Power"] },
+      { name: "Koganegawa SP", types: ["Quick", "Set"] },
+      { name: "Oikawa SP", types: ["Power", "Set"] },
+      { name: "Kageyama UR", types: ["Quick", "Serve", "Set"] },
+      { name: "Kuro UR", types: ["Quick", "Block"] },
+      { name: "Oikawa UR", types: ["Power", "Serve", "Set"] },
+      { name: "Ushijima UR", types: ["Power", "Serve"] },
+      { name: "Bokuto UR", types: ["Power", "Serve"] },
+      { name: "Atsumu UR", types: ["Quick", "Serve", "Set"] },
+      { name: "Osamu UR", types: ["Quick", "Serve"] },
+      { name: "Hoshiumi UR", types: ["Power", "Serve", "Set", "Quick"] },
+      { name: "Hirugami UR", types: ["Set", "Block"] },
+      { name: "Sakusa UR", types: ["Receive", "Power"] },
+      { name: "Komori UR", types: ["Receive", "Set"] }
     ];
 
     const bench = document.getElementById("bench");
-    const slots = document.querySelectorAll(".slot");
-    const typeCounts = document.getElementById("type-counts");
+    const court = document.getElementById("court");
+    const totals = { Quick:0, Power:0, Block:0, Serve:0, Receive:0, Set:0 };
 
-    // Create player cards
+    function updateTotals() {
+      for (let key in totals) totals[key] = 0;
+      court.querySelectorAll("div").forEach(slot => {
+        const playerName = slot.getAttribute("data-player");
+        if (playerName) {
+          const player = players.find(p => p.name === playerName);
+          if (player) player.types.forEach(t => totals[t]++);
+        }
+      });
+      for (let key in totals) {
+        document.getElementById(key).textContent = totals[key];
+      }
+    }
+
+    // render bench
     players.forEach(p => {
-      const card = document.createElement("div");
-      card.classList.add("player");
-      card.setAttribute("draggable", "true");
-      card.innerHTML = `
-        <img src="${p.image}" alt="${p.name}">
-        <strong>${p.name}</strong>
-        <div class="types">${p.types.map(t => `<span class="type-tag ${t}">${t}</span>`).join('')}</div>
-      `;
-      card.dataset.types = JSON.stringify(p.types);
-      bench.appendChild(card);
+      const div = document.createElement("div");
+      div.className = "player";
+      div.draggable = true;
+      div.textContent = p.name;
+
+      const tagBox = document.createElement("div");
+      tagBox.className = "tags";
+      p.types.forEach(t => {
+        const span = document.createElement("span");
+        span.className = "tag " + t;
+        span.textContent = t;
+        tagBox.appendChild(span);
+      });
+      div.appendChild(tagBox);
+
+      div.addEventListener("dragstart", e => {
+        e.dataTransfer.setData("text/plain", p.name);
+      });
+
+      bench.appendChild(div);
     });
 
-    // Drag & Drop
-    let draggedPlayer = null;
-
-    document.addEventListener("dragstart", e => {
-      if (e.target.classList.contains("player")) {
-        draggedPlayer = e.target;
-        e.target.classList.add("dragging");
-      }
-    });
-
-    document.addEventListener("dragend", e => {
-      if (e.target.classList.contains("player")) {
-        draggedPlayer = null;
-        e.target.classList.remove("dragging");
-      }
-    });
-
-    slots.forEach(slot => {
+    // allow dropping
+    court.querySelectorAll("div").forEach(slot => {
       slot.addEventListener("dragover", e => e.preventDefault());
       slot.addEventListener("drop", e => {
         e.preventDefault();
-        if (draggedPlayer) {
-          if (slot.firstChild && slot.firstChild.classList.contains("player")) {
-            bench.appendChild(slot.firstChild);
-          }
-          slot.innerHTML = "";
-          slot.appendChild(draggedPlayer);
-          slot.classList.add("filled");
-          updateCounts();
-        }
+        const name = e.dataTransfer.getData("text/plain");
+        slot.textContent = name;
+        slot.setAttribute("data-player", name);
+        updateTotals();
       });
     });
-
-    bench.addEventListener("dragover", e => e.preventDefault());
-    bench.addEventListener("drop", e => {
-      if (draggedPlayer) {
-        bench.appendChild(draggedPlayer);
-        updateCounts();
-      }
-    });
-
-    // Update counts
-    function updateCounts() {
-      let counts = {Quick:0, Power:0, Block:0, Serve:0, Receive:0, Set:0};
-      document.querySelectorAll(".slot .player").forEach(p => {
-        const types = JSON.parse(p.dataset.types);
-        types.forEach(t => counts[t]++);
-      });
-      typeCounts.innerHTML = `
-        <li><span class="Quick">Quick</span>: ${counts.Quick}</li>
-        <li><span class="Power">Power</span>: ${counts.Power}</li>
-        <li><span class="Block">Block</span>: ${counts.Block}</li>
-        <li><span class="Serve">Serve</span>: ${counts.Serve}</li>
-        <li><span class="Receive">Receive</span>: ${counts.Receive}</li>
-        <li><span class="Set">Set</span>: ${counts.Set}</li>
-      `;
-    }
   </script>
 </body>
 </html>
