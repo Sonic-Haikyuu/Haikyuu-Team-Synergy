@@ -44,6 +44,11 @@
       cursor: pointer;
     }
 
+    .court div.libero {
+      border: 2px solid #9c27b0;
+      background: #f3e5f5;
+    }
+
     .totals {
       background: white;
       padding: 15px;
@@ -88,9 +93,7 @@
     .Quick { background: #4CAF50; }
     .Power { background: #f44336; }
     .Block { background: #2196F3; }
-    .Serve { background: #ff9800; }
     .Receive { background: #9c27b0; }
-    .Set { background: #607d8b; }
   </style>
 </head>
 <body>
@@ -103,7 +106,7 @@
       <div data-pos="2">Position 2</div>
       <div data-pos="3">Position 3</div>
       <div data-pos="4">Position 4</div>
-      <div data-pos="5">Position 5</div>
+      <div class="libero" data-pos="5">Libero</div>
       <div data-pos="6">Position 6</div>
       <div data-pos="7">Position 7</div>
     </div>
@@ -114,9 +117,7 @@
       <p class="Quick">Quick: <span id="Quick">0</span></p>
       <p class="Power">Power: <span id="Power">0</span></p>
       <p class="Block">Block: <span id="Block">0</span></p>
-      <p class="Serve">Serve: <span id="Serve">0</span></p>
       <p class="Receive">Receive: <span id="Receive">0</span></p>
-      <p class="Set">Set: <span id="Set">0</span></p>
     </div>
   </div>
 
@@ -125,34 +126,34 @@
 
   <script>
     const players = [
-      { name: "Hinata SP", types: ["Quick", "Receive"] },
-      { name: "Nishinoya SP", types: ["Receive", "Set"] },
-      { name: "Tsuki SP", types: ["Quick", "Block"] },
-      { name: "Sugawara SP", types: ["Block", "Serve", "Set"] },
-      { name: "Kenma", types: ["Receive", "Set"] },
-      { name: "Aone SP", types: ["Block", "Serve"] },
-      { name: "Bokuto SP", types: ["Power", "Receive"] },
-      { name: "Akaashi SP", types: ["Power", "Set"] },
-      { name: "Kuro SP", types: ["Receive", "Quick"] },
-      { name: "Kunimi SP", types: ["Receive", "Power"] },
-      { name: "Koganegawa SP", types: ["Quick", "Set"] },
-      { name: "Oikawa SP", types: ["Power", "Set"] },
-      { name: "Kageyama UR", types: ["Quick", "Serve", "Set"] },
-      { name: "Kuro UR", types: ["Quick", "Block"] },
-      { name: "Oikawa UR", types: ["Power", "Serve", "Set"] },
-      { name: "Ushijima UR", types: ["Power", "Serve"] },
-      { name: "Bokuto UR", types: ["Power", "Serve"] },
-      { name: "Atsumu UR", types: ["Quick", "Serve", "Set"] },
-      { name: "Osamu UR", types: ["Quick", "Serve"] },
-      { name: "Hoshiumi UR", types: ["Power", "Serve", "Set", "Quick"] },
-      { name: "Hirugami UR", types: ["Set", "Block"] },
-      { name: "Sakusa UR", types: ["Receive", "Power"] },
-      { name: "Komori UR", types: ["Receive", "Set"] }
+      { name: "Hinata SP", types: ["Quick","Receive"], libero: false },
+      { name: "Nishinoya SP", types: ["Receive","Set"], libero: true },
+      { name: "Tsuki SP", types: ["Quick","Block"], libero: false },
+      { name: "Sugawara SP", types: ["Block","Serve","Set"], libero: false },
+      { name: "Kenma", types: ["Receive","Set"], libero: false },
+      { name: "Aone SP", types: ["Block","Serve"], libero: false },
+      { name: "Bokuto SP", types: ["Power","Receive"], libero: false },
+      { name: "Akaashi SP", types: ["Power","Set"], libero: false },
+      { name: "Kuro SP", types: ["Receive","Quick"], libero: false },
+      { name: "Kunimi SP", types: ["Receive","Power"], libero: false },
+      { name: "Koganegawa SP", types: ["Quick","Set"], libero: false },
+      { name: "Oikawa SP", types: ["Power","Set"], libero: false },
+      { name: "Kageyama UR", types: ["Quick","Serve","Set"], libero: false },
+      { name: "Kuro UR", types: ["Quick","Block"], libero: false },
+      { name: "Oikawa UR", types: ["Power","Serve","Set"], libero: false },
+      { name: "Ushijima UR", types: ["Power","Serve"], libero: false },
+      { name: "Bokuto UR", types: ["Power","Serve"], libero: false },
+      { name: "Atsumu UR", types: ["Quick","Serve","Set"], libero: false },
+      { name: "Osamu UR", types: ["Quick","Serve"], libero: false },
+      { name: "Hoshiumi UR", types: ["Power","Serve","Set","Quick"], libero: false },
+      { name: "Hirugami UR", types: ["Set","Block"], libero: false },
+      { name: "Sakusa UR", types: ["Receive","Power"], libero: false },
+      { name: "Komori UR", types: ["Receive","Set"], libero: true }
     ];
 
     const bench = document.getElementById("bench");
     const court = document.getElementById("court");
-    const totals = { Quick:0, Power:0, Block:0, Serve:0, Receive:0, Set:0 };
+    const totals = { Quick:0, Power:0, Block:0, Receive:0 };
 
     function updateTotals() {
       for (let key in totals) totals[key] = 0;
@@ -160,7 +161,9 @@
         const playerName = slot.getAttribute("data-player");
         if (playerName) {
           const player = players.find(p => p.name === playerName);
-          if (player) player.types.forEach(t => totals[t]++);
+          if (player) player.types.forEach(t => {
+            if (totals.hasOwnProperty(t)) totals[t]++;
+          });
         }
       });
       for (let key in totals) {
@@ -198,6 +201,18 @@
       slot.addEventListener("drop", e => {
         e.preventDefault();
         const name = e.dataTransfer.getData("text/plain");
+        const player = players.find(p => p.name === name);
+
+        // libero restriction
+        if (slot.classList.contains("libero") && !player.libero) {
+          alert("Only a Libero can be placed here!");
+          return;
+        }
+        if (!slot.classList.contains("libero") && player.libero) {
+          alert("Libero can only go into the Libero slot!");
+          return;
+        }
+
         slot.textContent = name;
         slot.setAttribute("data-player", name);
         updateTotals();
